@@ -91,7 +91,6 @@ with open(caminho_arquivo_manual, 'r') as arquivo: # Agora vou ler o arquivo que
     for linha in linhas:
         manual.append(int(linha.strip()))
 
-print(caminho_arquivo_manual)
 nome_resultado = caminho_arquivo_manual.split("_manual.txt")[0] # Tiro a parte do manual
 nome_resultado = nome_resultado.split("cortes_manuais/")[1] # Tiro a parte do caminho que vem antes
 nome_resultado = f"estatisticas/{nome_resultado}_estatistica_{limiar}.txt"

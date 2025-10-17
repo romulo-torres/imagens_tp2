@@ -100,17 +100,16 @@ def distancia_BIC(hist1, hist2): # Função pra calcular a distancia seguindo o 
     soma_p_borda = 0
 
     for i in range(0, len(hist1[0])): # Seguindo o algoritmo do bic 
-        soma_p_borda += abs(funcao_f(hist1[0][i]) - funcao_f(hist2[1][i])) # (hist[0] é histogramas de borda, hist[1] é histogramas de interior)
-        soma_p_interior += abs(funcao_f(hist1[0][i]) - funcao_f(hist2[1][i]))
-
-    print(f"Borda: {soma_p_borda} e interior: {soma_p_interior}")
+        soma_p_borda += abs(funcao_f(hist1[0][i]) - funcao_f(hist2[0][i])) # (hist[0] é histogramas de borda, hist[1] é histogramas de interior)
+        soma_p_interior += abs(funcao_f(hist1[1][i]) - funcao_f(hist2[1][i]))
 
     return (soma_p_borda + soma_p_interior)/2 # Somando as duas distancias de interior e borda
     
 
 def maior_distancia_BIC(histogramas1, histogramas2): # Função pra eu descobrir qual é a maior distancia entre as 5 partições (No BIC, quanto menor o valor, mais proximos são as imagens, então eu pego o maior pois a imagem é mais diferente)
     distancias = [] # Crio uma lista pra guardar cada distancia
-    pesos = [0.5, 0.1, 0.1, 0.1, 0.1] # Pesos pra fazer média ponderada, o centro é mais uimportante que o resto
+    #pesos = [0.5, 0.1, 0.1, 0.1, 0.1] # Pesos pra fazer média ponderada, o centro é mais uimportante que o resto
+    pesos = [1,1,1,1,1]
     for i in range(0, len(histogramas1)):
         distancias.append(distancia_BIC(histogramas1[i], histogramas2[i])) # Coloco na lista a distancia BIC de cada partição 
     
@@ -204,7 +203,7 @@ while(frame_atual < total_frames): # Enquanto n li todos os quadros
     
     #A gente decidiu escolher a maxima dentre as distancia pra comparar com a limiar, pois assim a gente vai ter um valor melhor entre as partições para se comparar com o limiar
     resultado = maior_distancia_BIC(histogramas_frame1, histogramas_frame2) # Calculo o maximo das distancia do BIC
-    print(f"Resultado = {resultado} ({frame_atual}/{total_frames})")
+    print(f"{resultado}, {frame_atual}/{total_frames}")
 
     if(resultado > limiar): # Se for uma troca de cena, eu coloco aqui
         # A heuristica que escolhemos para achar o quadro chave foi calcular o quadro médio entre uma cena e outra
@@ -222,12 +221,17 @@ while(frame_atual < total_frames): # Enquanto n li todos os quadros
 
 quadros_identificados.append((quadros_chaves[-1]*2)-quadros_identificados[-1]) # Coloco o ultimo quadro que não é pegado pelo loop
 
-with open("quadros_identificados.txt", 'w') as arquivo: # Vou escrever um arquivo com os quadros identificados e chaves    
+nome_video2 = nome_do_video.split('videos/')[1].split(".mp4")[0] # Pegando só o nome
+
+diretorio_chaves = f"cortes_chaves/{nome_video2}_cortes_chaves_{limiar}_BIC.txt"
+diretorio_identificados = f"cortes_identificados/{nome_video2}_{limiar}_BIC.txt"
+
+with open(diretorio_identificados, 'w') as arquivo: # Vou escrever um arquivo com os quadros identificados e chaves    
     arquivo.write(f"Titulo do video: {nome_do_video}\nLimiar: {limiar}\nTotal de Frames: {total_frames}\nSalto: {fps}\nQuadros:\n")
     for i in quadros_identificados:
         arquivo.write(str(i) + "\n")
 
-with open("quadros_chaves.txt", 'w+') as arquivo:
+with open(diretorio_chaves, 'w+') as arquivo:
     arquivo.write(f"Titulo do video: {nome_do_video}\nLimiar: {limiar}\nTotal de Frames: {total_frames}\nSalto: {fps}\nQuadros:\n")
     for i in quadros_chaves:
         arquivo.write(str(i) + "\n")
