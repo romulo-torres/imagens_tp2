@@ -3,6 +3,7 @@ import sys
 def calcula_estatisticas(arquivo, manual, qid, salto, total_frames): # Função que criamos automatiza o calculo das estatisticas do relatório 
     nao_identificados = []
     corretamente_identificados = []
+    identificados_todos = [elem for elem in qid] # Copio
 
     quadros_total_manual = len(manual)
     quadros_total_algoritmo = len(qid)
@@ -43,7 +44,7 @@ def calcula_estatisticas(arquivo, manual, qid, salto, total_frames): # Função 
     vn = total_frames - (vp + fp + fn) # Verdadeiro negativo
     acuracia = ((vp + vn)/(vn + vp + fp + fn))*100
 
-    arquivo.write(f"Acuracia: (({vp} + {vn})/({vn} + {vp} + {fp} + {fn})) = {vp + vn}/{vp+vn+fp+fn} = {acuracia:.2f}%")
+    arquivo.write(f"Acuracia: (({vp} + {vn})/({vn} + {vp} + {fp} + {fn})) = {vp + vn}/{vp+vn+fp+fn} = {acuracia:.2f}%\n")
     arquivo.write(f"Quadros Totais (Manual): {quadros_total_manual}\n")
     arquivo.write(f"Quadros detectados no total: {quadros_total_algoritmo}\n")
     arquivo.write(f"Quadros corretamente detectados (Verdadeiro Positivo): {vp}\n")
@@ -52,20 +53,21 @@ def calcula_estatisticas(arquivo, manual, qid, salto, total_frames): # Função 
     arquivo.write(f"Quadros nao-cortes corretamente identificados (Verdadeiro Negativo): {total_frames} - {vp} - {fp} - {fn} =  {vn}\n")
     arquivo.write(f"Total de Frames: {total_frames}\n")
 
-    #Em baixo eu printo os quadros identificados corretamente, não identificados e incorretamente identificados 
-    #arquivo.write(f"Corretamente identificados: {corretamente_identificados}\n")
-    #arquivo.write(f"Nao identificados: {nao_identificados}\n")
-    #arquivo.write(f"Detectados incorretamente: {detectados_incorretamente}\n\n")
+    #Em baixo eu printo: todos os identificados (total), os quadros identificados corretamente, não identificados e incorretamente identificados 
 
-    arquivo.write(f"\n\nQUADROS NAO IDENTIFICADOS\n\n")
+    arquivo.write(f"\n\nQUADROS IDENTIFICADOS (TODOS)\n\n")
+    for elem in identificados_todos:
+        arquivo.write(f"{elem}\n")
+
+    arquivo.write(f"\n\nQUADROS NAO IDENTIFICADOS (SOMENTE)\n\n")
     for elem in nao_identificados:
         arquivo.write(f"{elem}\n")
 
-    arquivo.write(f"\nQUADROS CORRETAMENTE IDENTIFICADOS\n\n")
+    arquivo.write(f"\n\nQUADROS CORRETAMENTE IDENTIFICADOS (SOMENTE)\n\n")
     for elem in corretamente_identificados:
         arquivo.write(f"{elem}\n")
 
-    arquivo.write(f"\n\nQUADROS INCORRETAMENTE IDENTIFICADOS\n\n")
+    arquivo.write(f"\n\nQUADROS INCORRETAMENTE IDENTIFICADOS (SOMENTE)\n\n")
     for elem in detectados_incorretamente:
         arquivo.write(f"{elem}\n")
 
@@ -93,7 +95,7 @@ with open(caminho_arquivo_manual, 'r') as arquivo: # Agora vou ler o arquivo que
 
 nome_resultado = caminho_arquivo_manual.split("_manual.txt")[0] # Tiro a parte do manual
 nome_resultado = nome_resultado.split("cortes_manuais/")[1] # Tiro a parte do caminho que vem antes
-nome_resultado = f"estatisticas/{nome_resultado}_estatistica_{limiar}.txt"
+nome_resultado = f"estatisticas/{nome_resultado}_estatistica_{limiar}_hist.txt"
 
 with open(nome_resultado, 'w') as arquivo: # Agora vou criar um arquivo com todo o resultado e calculos da estatistica
     calcula_estatisticas(arquivo, manual, quadros_identificados, salto, total_frames)

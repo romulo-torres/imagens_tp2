@@ -108,15 +108,11 @@ def distancia_BIC(hist1, hist2): # Função pra calcular a distancia seguindo o 
 
 def maior_distancia_BIC(histogramas1, histogramas2): # Função pra eu descobrir qual é a maior distancia entre as 5 partições (No BIC, quanto menor o valor, mais proximos são as imagens, então eu pego o maior pois a imagem é mais diferente)
     distancias = [] # Crio uma lista pra guardar cada distancia
-    #pesos = [0.5, 0.1, 0.1, 0.1, 0.1] # Pesos pra fazer média ponderada, o centro é mais uimportante que o resto
-    pesos = [1,1,1,1,1]
+    
     for i in range(0, len(histogramas1)):
         distancias.append(distancia_BIC(histogramas1[i], histogramas2[i])) # Coloco na lista a distancia BIC de cada partição 
     
-    distancias_com_peso = [distancias[x] * pesos[x] for x in range(0, len(distancias))] # Construo as distancias com o peso aplicado
-    #indice_maior = distancias_com_peso.index(max(distancias_com_peso))
-
-    return max(distancias_com_peso) # Retornando a maior distancia de acordo com a média ponderada das distancias com peso
+    return max(distancias) # Retornando a maior distancia
 
 def verifica_tudo_preto(frame, limiar): # Funçãozinha pra saber se o frame é todo preto
     altura, largura, n_bandas = frame.shape # Pegando a altura e largura da imagem
@@ -150,6 +146,7 @@ def verifica_tudo_branco(frame, limiar): # Mesma coisa da função de ver se tá
 
 nome_do_video = sys.argv[1] # Caminho do vídeo
 limiar = float(sys.argv[2]) # Ler o Limiar
+print(f"Vídeo: {nome_do_video} (BIC, {limiar})\n")
 
 video = cv2.VideoCapture(nome_do_video) # Leio o vídeo
 if not video.isOpened(): # Vejo se não deu nenhum erro
@@ -165,13 +162,14 @@ quadros_identificados = [] # Lista pra eu guardar os meus quadros identificados
 #Vou ler o primeiro frame valido (nem preto, nem branco)
 video.set(cv2.CAP_PROP_POS_FRAMES, frame_atual) # Seto as configurações pra pegar o frame1
 ret, frame1 = video.read() # Pego o frame atual
-frame1 = quantizacao(frame1, 64)
+
 while(frame_atual + fps <= total_frames and (verifica_tudo_preto(frame1, 10) == True or verifica_tudo_branco(frame1, 240) == True)):
     #print(f"O frame: {frame_atual} é branco ou preto" )
     video.set(cv2.CAP_PROP_POS_FRAMES, frame_atual) # Seto as configurações pra pegar o frame
     ret, frame1 = video.read() # Pego o frame atual
     frame_atual+=fps # Pulo pro proximo take
-    
+
+frame1 = quantizacao(frame1, 64)# Aplico a quantização de 64 cores
 frame_info1 = f"{frame_atual}/{total_frames-1}" # Pegando as informações do frame1
 pode_frame1 = True # Seto que o frame1 pode ter o histograma calculado
 
@@ -183,14 +181,15 @@ while(frame_atual < total_frames): # Enquanto n li todos os quadros
     #Lendo o segundo take
     video.set(cv2.CAP_PROP_POS_FRAMES, frame_atual) # Seto as configurações pra pegar o frame2
     ret, frame2 = video.read() # Pego o frame atual
-    frame2 = quantizacao(frame2, 64)
 
     #Vou lendo até achar um frame que não seja nem todo branco, nem todo preto, e que esteja antes de acabar o vídeo
     while(frame_atual < total_frames and (frame2 is not None) and (verifica_tudo_preto(frame2, 10) == True or verifica_tudo_branco(frame2, 240) == True)): # Vou procurando o frame até vir um que não é nem todo preto nem todo branco
         video.set(cv2.CAP_PROP_POS_FRAMES, frame_atual) # Seto as configurações pra pegar o frame
         ret, frame2 = video.read() # Pego o frame atual
         frame_atual+=fps # Pulo pro proximo take
+    
     if(frame_atual < total_frames and frame2 is not None): # Se tiver dentro dos frames totais
+        frame2 = quantizacao(frame2, 64) # Aplico a quantização
         pode_frame2 = True # Então posso calcular o histograma
     frame_info2 = f"{frame_atual}/{total_frames-1}" # Pegando as informações do frame
 
@@ -223,15 +222,15 @@ quadros_identificados.append((quadros_chaves[-1]*2)-quadros_identificados[-1]) #
 
 nome_video2 = nome_do_video.split('videos/')[1].split(".mp4")[0] # Pegando só o nome
 
-diretorio_chaves = f"cortes_chaves/{nome_video2}_cortes_chaves_{limiar}_BIC.txt"
-diretorio_identificados = f"cortes_identificados/{nome_video2}_{limiar}_BIC.txt"
+diretorio_chaves = f"cortes_chaves/{nome_video2}_cortes_chaves_{limiar}_bic.txt"
+diretorio_identificados = f"cortes_identificados/{nome_video2}_{limiar}_bic.txt"
 
 with open(diretorio_identificados, 'w') as arquivo: # Vou escrever um arquivo com os quadros identificados e chaves    
     arquivo.write(f"Titulo do video: {nome_do_video}\nLimiar: {limiar}\nTotal de Frames: {total_frames}\nSalto: {fps}\nQuadros:\n")
     for i in quadros_identificados:
         arquivo.write(str(i) + "\n")
 
-with open(diretorio_chaves, 'w+') as arquivo:
+with open(diretorio_chaves, 'w') as arquivo:
     arquivo.write(f"Titulo do video: {nome_do_video}\nLimiar: {limiar}\nTotal de Frames: {total_frames}\nSalto: {fps}\nQuadros:\n")
     for i in quadros_chaves:
         arquivo.write(str(i) + "\n")

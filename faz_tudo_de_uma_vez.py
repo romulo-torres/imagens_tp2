@@ -3,15 +3,17 @@ import time
 
 inicio_tempo = time.time() # inicio do tempo
 
-#OBS: Todos os arquivos que são de quadros identificados manualmente devem acabar com _manual.txt pro script funcionar
-lista_videos = ["homem_aranha.mp4", "trivago.mp4", "flamengo_jornal.mp4", "minecraft_trailer.mp4", "old_town_road.mp4"] #Aqui tu coloca todos os arquivos manuais 
+#OBS: Todos os arquivos que são de quadros identificados manualmente devem acabar com _manual.txt pro script funcionar. Tem que colocar cada um desses na pasta de cortes_manuais
+lista_videos = ["homem_aranha.mp4", "trivago.mp4", "flamengo_jornal.mp4", "minecraft_trailer.mp4", "old_town_road.mp4"
+""] #Aqui tu coloca todos os arquivos manuais 
 
 
 for video in lista_videos:
     limiar1_hist = '50000'
     limiar2_hist = '100000'
-    limiar3_bic = '5'
-    limiar4_bic = '1'
+    limiar3_bic = '5.0'
+    limiar4_bic = '1.0'
+
     nome_video = video.split(".mp4")[0] # Pegando só o nome sem o formato
     diretorio_chaves1_hist = f"cortes_chaves/{nome_video}_{limiar1_hist}_hist.txt"
     diretorio_chaves2_hist = f"cortes_chaves/{nome_video}_{limiar2_hist}_hist.txt"
@@ -69,7 +71,7 @@ for video in lista_videos:
         text=True  # Para garantir que a saída seja tratada como texto
     )
 
-    #Limiar2 (BIC)
+    # #Limiar2 (BIC)
     subprocess.run(
         ['python3', 'detector_corte_BIC.py', diretorio_video, limiar4_bic],
         capture_output=False,  # Captura a saída

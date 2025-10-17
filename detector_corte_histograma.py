@@ -92,7 +92,8 @@ def maior_distancia_euclidiana(histogramas1, histogramas2): # Função pra eu de
 
 nome_do_video = sys.argv[1] # Caminho do vídeo
 limiar = int(sys.argv[2]) # Ler o Limiar
-print("Vídeo: ", nome_do_video)
+
+print(f"Vídeo: {nome_do_video} (Histograma, {limiar})\n")
 video = cv2.VideoCapture(nome_do_video) # Leio o vídeo
 
 if not video.isOpened(): # Vejo se não deu nenhum erro
@@ -131,6 +132,7 @@ while(frame_atual < total_frames): # Enquanto n li todos os quadros
         video.set(cv2.CAP_PROP_POS_FRAMES, frame_atual) # Seto as configurações pra pegar o frame
         ret, frame2 = video.read() # Pego o frame atual
         frame_atual+=fps # Pulo pro proximo take
+    
     if(frame_atual < total_frames and frame2 is not None): # Se tiver dentro dos frames totais
         pode_frame2 = True # Então posso calcular o histograma
     frame_info2 = f"{frame_atual}/{total_frames-1}" # Pegando as informações do frame
@@ -145,6 +147,7 @@ while(frame_atual < total_frames): # Enquanto n li todos os quadros
     #A gente decidiu escolher a maxima dentre as distancia pra comparar com a limiar, pois assim a gente vai ter um valor melhor entre as partições para se comparar com o limiar
     resultado = maior_distancia_euclidiana(histogramas_frame1, histogramas_frame2) # Calculo o maximo das distancia euclidiana
     print(f"{resultado}, {frame_atual}/{total_frames}")
+    
     if(resultado > limiar): # Se for uma troca de cena, eu coloco aqui
         # A heuristica que escolhemos para achar o quadro chave foi calcular o quadro médio entre uma cena e outra
         q_atual1 = int(frame_info1.split("/")[0])
@@ -163,8 +166,8 @@ quadros_identificados.append((quadros_chaves[-1]*2)-quadros_identificados[-1]) #
 
 nome_video2 = nome_do_video.split('videos/')[1].split(".mp4")[0] # Pegando só o nome
 
-diretorio_chaves = f"cortes_chaves/{nome_video2}_cortes_chaves_{limiar}.txt"
-diretorio_identificados = f"cortes_identificados/{nome_video2}_{limiar}.txt"
+diretorio_chaves = f"cortes_chaves/{nome_video2}_cortes_chaves_{limiar}_hist.txt"
+diretorio_identificados = f"cortes_identificados/{nome_video2}_{limiar}_hist.txt"
 
 with open(diretorio_identificados, 'w') as arquivo: # Vou escrever um arquivo com os quadros identificados e chaves    
     arquivo.write(f"Titulo do video: {nome_do_video}\nLimiar: {limiar}\nTotal de Frames: {total_frames}\nSalto: {fps}\nQuadros:\n")
