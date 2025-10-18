@@ -64,6 +64,7 @@ def calcula_estatisticas(arquivo, manual, qid, salto, total_frames): # Função 
         arquivo.write(f"{elem}\n")
 
     arquivo.write(f"\n\nQUADROS CORRETAMENTE IDENTIFICADOS (SOMENTE)\n\n")
+    corretamente_identificados.sort() # Ordenando antes de printar
     for elem in corretamente_identificados:
         arquivo.write(f"{elem}\n")
 

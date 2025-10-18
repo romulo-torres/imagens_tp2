@@ -226,12 +226,12 @@ diretorio_chaves = f"cortes_chaves/{nome_video2}_cortes_chaves_{limiar}_bic.txt"
 diretorio_identificados = f"cortes_identificados/{nome_video2}_{limiar}_bic.txt"
 
 with open(diretorio_identificados, 'w') as arquivo: # Vou escrever um arquivo com os quadros identificados e chaves    
-    arquivo.write(f"Titulo do video: {nome_do_video}\nLimiar: {limiar}\nTotal de Frames: {total_frames}\nSalto: {fps}\nQuadros:\n")
+    arquivo.write(f"Titulo do video: {nome_do_video}\nLimiar: {limiar}\nTotal de Frames: {total_frames}\nSalto: {fps}\nQuadros:\n\n")
     for i in quadros_identificados:
         arquivo.write(str(i) + "\n")
 
 with open(diretorio_chaves, 'w') as arquivo:
-    arquivo.write(f"Titulo do video: {nome_do_video}\nLimiar: {limiar}\nTotal de Frames: {total_frames}\nSalto: {fps}\nQuadros:\n")
+    arquivo.write(f"Titulo do video: {nome_do_video}\nLimiar: {limiar}\nTotal de Frames: {total_frames}\nSalto: {fps}\nQuadros:\n\n")
     for i in quadros_chaves:
         arquivo.write(str(i) + "\n")
 
